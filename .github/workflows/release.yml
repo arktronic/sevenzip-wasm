@@ -32,6 +32,7 @@ jobs:
       uses: mymindstorm/setup-emsdk@v14
       with:
         version: 4.0.1
+        actions-cache-folder: 'emsdk-cache'
 
     - name: Compile
       run: ./build.sh
@@ -66,7 +67,7 @@ jobs:
       if: ${{ github.event.inputs.create_release == 'true' }}
       env:
         PACKAGE_VERSION: ${{ steps.setup.outputs.version }}
-      run: zip -r sevenzip-wasm-${PACKAGE_VERSION}.zip sevenzip-wasm/*
+      run: zip -r sevenzip-wasm-${PACKAGE_VERSION}.zip sevenzip-wasm/*.js sevenzip-wasm/*.wasm sevenzip-wasm/README* sevenzip-wasm/LICENSE*
 
     - name: Create release
       if: ${{ github.event.inputs.create_release == 'true' }}
@@ -75,3 +76,5 @@ jobs:
         tag_name: ${{ steps.setup.outputs.version }}
         name: ${{ steps.setup.outputs.version }}
         files: sevenzip-wasm-${{ steps.setup.outputs.version }}.zip
+        fail_on_unmatched_files: true
+        generate_release_notes: true
