@@ -52,10 +52,10 @@ jobs:
         echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
         echo "always-auth=true" >> ~/.npmrc
         export PACKAGE_VERSION="$(node -p "require('./package.json').version")"
-        echo ::set-output name=version::"$PACKAGE_VERSION"
+        echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
     - name: Publish to npm
-      if: ${{ github.event.inputs.publish_npm }}
+      if: ${{ github.event.inputs.publish_npm == 'true' }}
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
@@ -63,13 +63,13 @@ jobs:
         npm publish
 
     - name: Create release file
-      if: ${{ github.event.inputs.create_release }}
+      if: ${{ github.event.inputs.create_release == 'true' }}
       env:
         PACKAGE_VERSION: ${{ steps.setup.outputs.version }}
       run: zip -r sevenzip-wasm-${PACKAGE_VERSION}.zip sevenzip-wasm/*
 
     - name: Create release
-      if: ${{ github.event.inputs.create_release }}
+      if: ${{ github.event.inputs.create_release == 'true' }}
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.setup.outputs.version }}
