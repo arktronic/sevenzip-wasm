@@ -1,0 +1,74 @@
+name: Release
+
+defaults:
+  run:
+    shell: bash
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_npm:
+        type: boolean
+        description: Publish npm package
+        default: 'true'
+      create_release:
+        type: boolean
+        description: Create GitHub release
+        default: 'true'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+
+    - name: Emscripten setup
+      uses: mymindstorm/setup-emsdk@v14
+      with:
+        version: 4.0.1
+
+    - name: Compile
+      run: ./build.sh
+
+    - name: Test
+      run: |
+        cd sevenzip-wasm
+        npm ci
+        npm test
+
+    - name: Publish setup
+      id: setup
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        cd sevenzip-wasm
+        echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+        echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+        echo "always-auth=true" >> ~/.npmrc
+        export PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+        echo ::set-output name=version::"$PACKAGE_VERSION"
+
+    - name: Publish to npm
+      if: ${{ github.event.inputs.publish_npm }}
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: |
+        cd sevenzip-wasm
+        npm publish
+
+    - name: Create release file
+      if: ${{ github.event.inputs.create_release }}
+      env:
+        PACKAGE_VERSION: ${{ steps.setup.outputs.version }}
+      run: zip -r sevenzip-wasm-${PACKAGE_VERSION}.zip sevenzip-wasm/*
+
+    - name: Create release
+      if: ${{ github.event.inputs.create_release }}
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.setup.outputs.version }}
+        name: ${{ steps.setup.outputs.version }}
+        files: sevenzip-wasm-${{ steps.setup.outputs.version }}.zip

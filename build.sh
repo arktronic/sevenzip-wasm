@@ -31,5 +31,6 @@ popd &>/dev/null
 echo "Copying output to output directory."
 cp -f 7zip/CPP/7zip/Bundles/Alone2/b/g/sevenzip-wasm* sevenzip-wasm/
 cp -f README.md sevenzip-wasm/
+cp -f LICENSE sevenzip-wasm/
 
 echo "Done!"
