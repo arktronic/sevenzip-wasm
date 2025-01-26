@@ -30,5 +30,6 @@ popd &>/dev/null
 
 echo "Copying output to dist directory."
 cp -f 7zip/CPP/7zip/Bundles/Alone2/b/g/sevenzip-wasm* dist/
+cp -f README.md dist/
 
 echo "Done!"
