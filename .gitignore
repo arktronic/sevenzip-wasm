@@ -1,2 +1,3 @@
-dist/sevenzip-wasm*
-dist/README.md
+sevenzip-wasm/sevenzip-wasm*
+sevenzip-wasm/README.md
+sevenzip-wasm/node_modules/

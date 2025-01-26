@@ -1,5 +1,5 @@
 diff --git a/CPP/7zip/7zip_gcc.mak b/CPP/7zip/7zip_gcc.mak
-index bcb06a0..3afb193 100644
+index bcb06a0..7cb6131 100644
 --- a/CPP/7zip/7zip_gcc.mak
 +++ b/CPP/7zip/7zip_gcc.mak
 @@ -54,6 +54,17 @@ CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
@@ -20,7 +20,7 @@ index bcb06a0..3afb193 100644
  FLAGS_FLTO = -ffunction-sections
  FLAGS_FLTO = -flto
  FLAGS_FLTO = $(FLAGS_BASE)
-@@ -250,6 +261,16 @@ endif
+@@ -250,6 +261,18 @@ endif
  
  endif
  
@@ -32,7 +32,9 @@ index bcb06a0..3afb193 100644
 +  -sDISABLE_EXCEPTION_CATCHING=1 \
 +  -sMODULARIZE \
 +  -sEXPORT_NAME="SevenZipWasm" \
-+  -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "MEMFS"]'
++  -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "MEMFS", "NODEFS", "WORKERFS"]' \
++  -lnodefs.js \
++  -lworkerfs.js
 +endif
  
  LFLAGS_ALL = $(LFLAGS_STRIP) $(MY_ARCH_2) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(LFLAGS_NOEXECSTACK) $(OBJS) $(MY_LIBS) $(LIB2)
