@@ -1,6 +1,6 @@
 {
   "name": "sevenzip-wasm",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "7-Zip compiled for WebAssembly",
   "main": "sevenzip-wasm.js",
   "scripts": {
