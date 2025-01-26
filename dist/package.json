@@ -1,0 +1,24 @@
+{
+  "name": "sevenzip-wasm",
+  "version": "0.1.0",
+  "description": "7-Zip compiled for WebAssembly",
+  "main": "sevenzip-wasm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arktronic/sevenzip-wasm.git"
+  },
+  "keywords": [
+    "7-Zip",
+    "7zip",
+    "wasm"
+  ],
+  "author": "Sasha Kotlyar",
+  "license": "LGPL-2.1-or-later",
+  "bugs": {
+    "url": "https://github.com/arktronic/sevenzip-wasm/issues"
+  },
+  "homepage": "https://github.com/arktronic/sevenzip-wasm#readme"
+}
