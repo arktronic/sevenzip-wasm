@@ -52,3 +52,15 @@ console.log(sevenZip.FS.readdir('/'));
 ```
 
 For further examples of working with MEMFS and NODEFS, take a look at the included tests.
+
+## Changelog
+
+### 0.1.7
+
+- Update upstream to 25.00
+- Add compilation fix
+- Add more tests
+
+### 0.1.6
+
+- Initial public release
