@@ -1,0 +1,143 @@
+diff --git a/CPP/7zip/7zip_gcc.mak b/CPP/7zip/7zip_gcc.mak
+index 12f1ef2..35133e7 100644
+--- a/CPP/7zip/7zip_gcc.mak
++++ b/CPP/7zip/7zip_gcc.mak
+@@ -54,6 +54,17 @@ CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
+  $(CFLAGS_DEBUG) -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE \
+  -fPIC
+ 
++ifdef EMSCRIPTEN
++CFLAGS_BASE_REMOVE := \
++  -O2
++
++CFLAGS_BASE_ADD := \
++  -Oz \
++  -mnontrapping-fptoint
++
++CFLAGS_BASE := $(filter-out $(CFLAGS_BASE_REMOVE),$(CFLAGS_BASE)) $(CFLAGS_BASE_ADD)
++endif
++
+ FLAGS_FLTO = -ffunction-sections
+ FLAGS_FLTO = -flto
+ FLAGS_FLTO = $(FLAGS_BASE)
+@@ -250,6 +261,18 @@ endif
+ 
+ endif
+ 
++ifdef EMSCRIPTEN
++MY_LIBS := \
++  -Oz \
++  -sINVOKE_RUN=0 \
++  -sALLOW_MEMORY_GROWTH=1 \
++  -sDISABLE_EXCEPTION_CATCHING=1 \
++  -sMODULARIZE \
++  -sEXPORT_NAME="SevenZipWasm" \
++  -sEXPORTED_RUNTIME_METHODS='["callMain", "FS", "MEMFS", "NODEFS", "WORKERFS"]' \
++  -lnodefs.js \
++  -lworkerfs.js
++endif
+ 
+ LFLAGS_ALL = $(LFLAGS_STRIP) $(MY_ARCH_2) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(LFLAGS_NOEXECSTACK) $(OBJS) $(MY_LIBS) $(LIB2)
+ 
+diff --git a/CPP/7zip/Bundles/Alone2/makefile.gcc b/CPP/7zip/Bundles/Alone2/makefile.gcc
+index 2785aea..d2242ef 100644
+--- a/CPP/7zip/Bundles/Alone2/makefile.gcc
++++ b/CPP/7zip/Bundles/Alone2/makefile.gcc
+@@ -1,4 +1,9 @@
++ifdef EMSCRIPTEN
++PROG = sevenzip-wasm.js
++ST_MODE = 1
++else
+ PROG = 7zz
++endif
+ 
+ CONSOLE_VARIANT_FLAGS=-DZ7_PROG_VARIANT_Z
+ 
+diff --git a/CPP/7zip/UI/Console/PercentPrinter.cpp b/CPP/7zip/UI/Console/PercentPrinter.cpp
+index cfdab03..083733b 100644
+--- a/CPP/7zip/UI/Console/PercentPrinter.cpp
++++ b/CPP/7zip/UI/Console/PercentPrinter.cpp
+@@ -33,7 +33,7 @@ void CPercentPrinter::ClosePrint(bool needFlush)
+   /* '\r' in old MAC OS means "new line".
+      So we can't use '\r' in some systems */
+     
+-  #ifdef _WIN32
++  #if defined(_WIN32) || defined(__EMSCRIPTEN__)
+     char *start = _temp.GetBuf(num  + 2);
+     char *p = start;
+     *p++ = '\r';
+diff --git a/CPP/7zip/var_gcc.mak b/CPP/7zip/var_gcc.mak
+index 664491c..e38de60 100644
+--- a/CPP/7zip/var_gcc.mak
++++ b/CPP/7zip/var_gcc.mak
+@@ -6,7 +6,12 @@ IS_ARM64=
+ CROSS_COMPILE=
+ MY_ARCH=
+ USE_ASM=
++ifdef EMSCRIPTEN
++CC=$(CROSS_COMPILE)emcc
++CXX=$(CROSS_COMPILE)em++
++else
+ CC=$(CROSS_COMPILE)gcc
+ CXX=$(CROSS_COMPILE)g++
++endif
+ 
+ # -march=armv8-a+crc+crypto
+diff --git a/CPP/7zip/warn_gcc.mak b/CPP/7zip/warn_gcc.mak
+index 6152ab1..b3fd1ba 100644
+--- a/CPP/7zip/warn_gcc.mak
++++ b/CPP/7zip/warn_gcc.mak
+@@ -53,3 +53,23 @@ CFLAGS_WARN = $(CFLAGS_WARN_GCC_9)
+ 
+ # CXX_STD_FLAGS = -std=c++11
+ # CXX_STD_FLAGS =
++
++ifdef EMSCRIPTEN
++CFLAGS_WARN_REMOVE := \
++  -Waggressive-loop-optimizations \
++  -Wformat-contains-nul \
++  -Wbool-compare \
++  -Wduplicated-cond \
++  -Wduplicated-branches \
++  -Wimplicit-fallthrough=5 \
++  -Wmaybe-uninitialized \
++  -Wcast-align=strict \
++  -Wmissing-attributes
++
++CFLAGS_WARN_ADD := \
++  -Wimplicit-fallthrough \
++  -Wuninitialized \
++  -Wcast-align
++
++CFLAGS_WARN := $(filter-out $(CFLAGS_WARN_REMOVE),$(CFLAGS_WARN)) $(CFLAGS_WARN_ADD)
++endif
+\ No newline at end of file
+diff --git a/CPP/Windows/FileDir.cpp b/CPP/Windows/FileDir.cpp
+index 10c4e98..6103848 100644
+--- a/CPP/Windows/FileDir.cpp
++++ b/CPP/Windows/FileDir.cpp
+@@ -1250,8 +1250,10 @@ struct C_umask
+     mask = 0777 & (~um);        // octal: 0755 is expected
+     umask(um);  // restore the umask
+     // printf("\n umask = 0%03o mask = 0%03o\n", um, mask);
+-    
+-    // mask = 0777; // debug we can disable the restriction:
++
++#ifdef __EMSCRIPTEN__
++    mask = 0777; // debug we can disable the restriction:
++#endif
+   }
+ };
+ 
+diff --git a/CPP/Windows/System.cpp b/CPP/Windows/System.cpp
+index 4745785..a193f3e 100644
+--- a/CPP/Windows/System.cpp
++++ b/CPP/Windows/System.cpp
+@@ -356,6 +356,7 @@ bool GetRamSize(size_t &size)
+   #elif defined(__FreeBSD_kernel__) && defined(__GLIBC__)
+   // GNU/kFreeBSD Debian
+   // fixme
++  #elif defined(__EMSCRIPTEN__)
+   #else
+ 
+   struct sysinfo info;

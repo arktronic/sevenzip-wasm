@@ -15,11 +15,11 @@ if [ ! -f "README.md" ]; then
 	exit 1
 fi
 
-if git apply --reverse --check ../7zip-25.00.patch &>/dev/null; then
+if git apply --reverse --check ../7zip-25.01.patch &>/dev/null; then
 	echo "Patch already applied. Proceeding."
 else
 	echo "Applying patch."
-	git apply ../7zip-25.00.patch
+	git apply ../7zip-25.01.patch
 fi
 popd &>/dev/null
 

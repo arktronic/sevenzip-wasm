@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         submodules: 'true'
     
     - name: Emscripten setup
-      uses: mymindstorm/setup-emsdk@v14
+      uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
       with:
-        version: 4.0.1
+        version: 4.0.18
     
     - name: Compile
       run: ./build.sh

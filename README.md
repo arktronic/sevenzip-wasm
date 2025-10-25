@@ -55,6 +55,12 @@ For further examples of working with MEMFS and NODEFS, take a look at the includ
 
 ## Changelog
 
+### 0.1.8
+
+- Update upstream to 25.01
+- Remove additional compilation fix
+- Update dependencies
+
 ### 0.1.7
 
 - Update upstream to 25.00
