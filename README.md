@@ -1,4 +1,4 @@
-# sevenzip-wasm
+# sevenzip-wasm [![npm version](https://img.shields.io/npm/v/sevenzip-wasm.svg)](https://www.npmjs.com/package/sevenzip-wasm)
 
 Just another npm package with 7-Zip compiled for WebAssembly, inspired by similar packages out there.
 
