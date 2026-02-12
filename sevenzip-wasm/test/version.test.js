@@ -17,7 +17,7 @@ describe('7-Zip version', () => {
 		sevenZip.callMain([]);
 
 		// Verify version string contains expected elements
-		expect(output).toMatch(/7-Zip \(z\) 25.01/);
+		expect(output).toMatch(/7-Zip \(z\) 26.00/);
 		expect(output).toMatch(/ Threads\:1 /);
 		expect(output).toMatch(/32-bit/);
 	});
