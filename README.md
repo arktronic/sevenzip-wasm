@@ -55,6 +55,11 @@ For further examples of working with MEMFS and NODEFS, take a look at the includ
 
 ## Changelog
 
+### 26.2.0
+
+- Update upstream to 26.02
+- Update Emscripten to 6.0.1, possibly breaking compatibility with very old browsers
+
 ### 26.1.0
 
 - Update upstream to 26.01
