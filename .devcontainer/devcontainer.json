@@ -1,0 +1,15 @@
+{
+  "name": "sevenzip-wasm Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "postCreateCommand": "git submodule update --init --recursive && cd sevenzip-wasm && npm ci",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "ms-vscode.js-debug"
+      ]
+    }
+  }
+}

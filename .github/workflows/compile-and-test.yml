@@ -5,26 +5,27 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 #v6.0.3
       with:
         submodules: 'true'
-    
-    - name: Emscripten setup
-      uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
+
+    - name: Build container
+      uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf #v7.2.0
       with:
-        version: 4.0.18
+        context: .devcontainer
+        push: false
+        load: true
+        tags: sevenzip-wasm-devcontainer:latest
     
     - name: Compile
-      run: ./build.sh
+      run: docker run --rm -v $GITHUB_WORKSPACE:/workspace sevenzip-wasm-devcontainer:latest ./build.sh
     
     - name: Test
-      run: |
-        cd sevenzip-wasm
-        npm ci
-        npm test
+      run: docker run --rm -v $GITHUB_WORKSPACE:/workspace sevenzip-wasm-devcontainer:latest bash -c "cd sevenzip-wasm && npm ci && npm test"
