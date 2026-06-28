@@ -25,22 +25,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 #v6.0.3
       with:
         submodules: 'true'
 
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
       with:
         node-version: '24'
         registry-url: 'https://registry.npmjs.org'
 
-    - name: Emscripten setup
-      uses: mymindstorm/setup-emsdk@6ab9eb1bda2574c4ddb79809fc9247783eaf9021
+    - name: Build container
+      uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf #v7.2.0
       with:
-        version: 4.0.18
+        context: .devcontainer
+        push: false
+        load: true
+        tags: sevenzip-wasm-devcontainer:latest
 
     - name: Compile
-      run: ./build.sh
+      run: docker run --rm -v $GITHUB_WORKSPACE:/workspace sevenzip-wasm-devcontainer:latest ./build.sh
 
     - name: Test
       run: |
@@ -67,7 +70,7 @@ jobs:
 
     - name: Create release
       if: ${{ github.event.inputs.create_release == 'true' }}
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda #v3.0.0
       with:
         tag_name: ${{ steps.setup.outputs.version }}
         name: ${{ steps.setup.outputs.version }}
