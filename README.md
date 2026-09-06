@@ -55,6 +55,10 @@ For further examples of working with MEMFS and NODEFS, take a look at the includ
 
 ## Changelog
 
+### 26.3.0
+
+- Update upstream to 26.03
+
 ### 26.2.0
 
 - Update upstream to 26.02
